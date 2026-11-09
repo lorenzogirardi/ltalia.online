@@ -6,6 +6,11 @@ on:
     # passare solo l'esecuzione che cade nell'ora giusta a Roma.
     - cron: "30 5,6,10,11,15,16,20,21 * * *"
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Genera e stampa nei log, senza pubblicare"
+        type: boolean
+        default: false
   push:
     branches: [main]
 
@@ -48,11 +53,12 @@ jobs:
         with: { python-version: "3.12", cache: pip, cache-dependency-path: pipeline/requirements.txt }
       - run: pip install -r pipeline/requirements.txt
       - run: python -m pytest -q tests
-      - run: python pipeline/run.py
+      - run: python pipeline/run.py ${{ inputs.dry_run && '--dry-run' || '' }}
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL }}
       - name: Commit nuovi articoli
+        if: ${{ !inputs.dry_run }}
         run: |
           git config user.name "ltalia-bot"
           git config user.email "ltalia-bot@users.noreply.github.com"

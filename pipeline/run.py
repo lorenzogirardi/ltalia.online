@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 
 from collect import collect
 from common import load_processed, load_yaml, save_processed
@@ -35,7 +36,7 @@ def main() -> int:
                 p = load_processed(); p[cand["id"]] = {"link": cand["link"], "rejected": rejected}; save_processed(p)
             continue
         if args.dry_run:
-            print(f"[run] OK (dry-run): {art['title']}")
+            print(f"[run] OK (dry-run):\n{json.dumps(art, ensure_ascii=False, indent=2)}")
         else:
             print(f"[run] pubblicato {publish(art, cand)}")
         published += 1
