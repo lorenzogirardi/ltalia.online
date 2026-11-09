@@ -18,5 +18,5 @@ blocklist:
 on_forbidden_source: skip
 model: "anthropic/claude-sonnet-4.5"   # sovrascrivibile con env OPENROUTER_MODEL
 max_articles_per_run: 3
-min_body_chars: 400
-max_body_chars: 2500
+min_body_chars: 250
+max_body_chars: 1200
