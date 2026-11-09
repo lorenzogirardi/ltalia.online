@@ -1,7 +1,10 @@
 name: Publish
 on:
   schedule:
-    - cron: "0 6,12,18 * * *"   # UTC
+    # 7:30, 12:30, 17:30, 22:30 ora di Roma. Il cron è in UTC e non segue l'ora legale:
+    # si schedula sia l'offset invernale (+1) sia quello estivo (+2) e il job "gate" lascia
+    # passare solo l'esecuzione che cade nell'ora giusta a Roma.
+    - cron: "30 5,6,10,11,15,16,20,21 * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -17,9 +20,27 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.g.outputs.run }}
+    steps:
+      - id: g
+        run: |
+          hour=$(TZ=Europe/Rome date +%H)
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            case "$hour" in
+              07|12|17|22) echo "run=true" >> "$GITHUB_OUTPUT" ;;
+              *) echo "run=false" >> "$GITHUB_OUTPUT"; echo "Ora Roma $hour: fuori orario, salto" ;;
+            esac
+          fi
+
   generate:
+    needs: gate
     # solo run schedulate/manuali: un push (grafica, correzioni) non chiama OpenRouter
-    if: github.event_name != 'push'
+    if: github.event_name != 'push' && needs.gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,9 +61,9 @@ jobs:
           git push
 
   build:
-    needs: generate
-    # parte anche quando generate è saltato (push), ma non se è fallito
-    if: ${{ !cancelled() && (needs.generate.result == 'success' || needs.generate.result == 'skipped') }}
+    needs: [gate, generate]
+    # parte anche quando generate è saltato (push), ma non se è fallito né fuori orario
+    if: ${{ !cancelled() && needs.gate.outputs.run == 'true' && (needs.generate.result == 'success' || needs.generate.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
