@@ -12,11 +12,28 @@ Regole non negoziabili:
 - Niente cifre o fatti reali travisati: l'invenzione deve essere evidentemente comica.
 - Niente HTML, niente markdown oltre ai paragrafi semplici.
 
-Tono: battute secche, da bar alle undici. Una situazione reale spinta un passo oltre il ragionevole, con un
-finale a sorpresa, magari una battuta di una figura minore. Poche parole, niente giri lunghi, niente
-spiegazioni della battuta. Il titolo è già mezza battuta.
+Tono: battute secche, da bar alle undici. Cronaca seria su una cosa piccola e assurda, spinta un passo oltre
+il ragionevole. Poche parole, niente giri lunghi, niente spiegazioni della battuta, niente morale finale.
+Il titolo è già mezza battuta; il sottotitolo la peggiora o la ribalta.
 
-Esempi del tono giusto (titolo / sottotitolo), non copiarli:
+Tecniche da usare (una o due per pezzo, non tutte):
+1. Presa alla lettera: un modo di dire o una formula burocratica applicata davvero.
+2. Logica burocratica: per fare A serve B, che richiede A; moduli, sportelli, appuntamenti tra sei mesi.
+3. Tragedia nazionale per una banalità: tono da emergenza per un problema minuscolo.
+4. Deadpan: nessuna esclamazione, nessun "ironia della sorte"; il comico sta nella serietà.
+5. Cose che parlano: un oggetto, un luogo o un ufficio che rilascia una dichiarazione (il pallone, l'ascensore, lo sportello).
+6. Numeri verosimili e assurdi: "14 moduli per eliminarne 13", "tra 6 mesi", "il 94%".
+7. Frase di una figura generica che smentisce sé stessa ("Siamo quasi a metà, mancano solo i permessi").
+8. Italia quotidiana: bar, parenti, condominio, treni, cantieri, sigle, ritardi, burocrazia.
+
+Apertura del corpo: inizia con una località di fantasia dal nome comico e la sigla della provincia, poi un
+trattino, poi il fatto. Esempio di forma: "Sportellopoli (BO) – ..." oppure "Rotatoria Bassa (MI) – ...".
+Non usare località reali al posto di quella di fantasia e non legare il fatto a luoghi reali.
+
+Da evitare: giochi di parole forzati, battute sulle persone, cattiveria, volgarità, politici e personaggi
+pubblici per nome, temi vietati sopra, spiegare perché fa ridere, finali moraleggianti, elenchi.
+
+Esempi del tono giusto (titolo / sottotitolo). Non copiarli e non riprenderne la struttura alla lettera:
 - "Il Governo presenta il piano 'Semplificazione 2.0': 14 nuovi moduli per eliminarne 13" /
   "Il modulo per annullare i moduli sarà disponibile in cartaceo, previo appuntamento tra 6 mesi."
 - "Ritrovato il cantiere dimenticato nel 1987: 'Era ancora in corso'" /
@@ -25,6 +42,18 @@ Esempi del tono giusto (titolo / sottotitolo), non copiarli:
   "Il pallone, dal canto suo, dichiara di essere stato 'rincorso per 90 minuti senza motivo'."
 - "SPID, CIE, CNS, PEC: il cittadino ora ha più sigle che amici" /
   "Per accedere al servizio basta ricordare la password della password. Con 3 maiuscole e un simbolo."
+- "Il treno arriva in orario: i pendolari chiedono di parlare con un responsabile" /
+  "In stazione scatta il protocollo 'non è mai successo', ma nessuno ricorda dove sia il modulo."
+- "Riunione di condominio finita in meno di un'ora: l'amministratore chiede un controllo" /
+  "L'ascensore si dichiara 'fuori servizio, ma non per questo fuori dal dibattito'."
+- "L'app del Comune si aggiorna: per pagare la TARI ora serve un'altra app per scaricare l'app" /
+  "Disponibile anche la versione cartacea, in formato digitale."
+- "Bolletta in calo di 2 euro: la famiglia festeggia con una cena da 80" /
+  "Il risparmio sarà reinvestito in un corso per capire la bolletta."
+- "Lavori stradali finiti in anticipo: la città pensa a un errore e li rifà" /
+  "Gli operai: 'Ci avevano detto che era un cantiere, non una consegna.'"
+- "Caffè al bar a 1,40 euro: introdotto lo sconto per chi lo beve in silenzio" /
+  "Il cliente che ordina anche il cornetto riceve in omaggio una opinione sul governo, a sua insaputa."
 
 Rispondi SOLO con un oggetto JSON con questi campi:
 title (max 120 caratteri), description (una frase, max 200),
