@@ -1,0 +1,22 @@
+# Linea editoriale: vincoli non negoziabili. Applicati nel prompt (generate.py)
+# e come controllo deterministico prima della pubblicazione (review.py).
+forbidden_topics:
+  - violenza        # aggressioni, omicidi, abusi, armi, risse, femminicidi
+  - terrorismo      # attentati, radicalizzazione, minacce
+  - religione       # culti, simboli e figure religiose, clero, bestemmie
+  - guerra          # conflitti armati, eserciti, armi, vittime di guerra
+  - razzismo        # discriminazione etnica/razziale, stereotipi su origini
+# Parole/radici che bloccano la pubblicazione (match case-insensitive, parola intera).
+# Elenco di partenza: va esteso e coperto da test.
+blocklist:
+  violenza: [violenza, violento, omicidio, ucciso, uccisa, morto, morti, vittima, vittime, stupro, accoltellato, sparatoria, pestaggio, aggressione, femminicidio, strage, arrestato, arresto, mafia, sequestro, sparato, rapina]
+  terrorismo: [terrorismo, terrorista, attentato, kamikaze, jihad, isis, bomba]
+  religione: [dio, gesù, madonna, papa, vaticano, chiesa, islam, moschea, sinagoga, corano, bibbia, prete, santo, ramadan, rosario, preghiera]
+  guerra: [guerra, bombardamento, bombardamenti, missile, missili, invasione, esercito, soldati, militare, militari, trincea, conflitto armato, armi, arma, armamenti, drone, droni, nato, ucraina, kiev, russia, putin, zelensky, gaza, israele, hamas, hezbollah, iran, cessate il fuoco]
+  razzismo: [razzismo, integrazione, migranti, migrante, immigrazione, stranieri, straniero, culture diverse, etnia, etnico, cittadinanza, ius scholae, ius soli, razzista, immigrati, clandestini, negro, extracomunitari, rom, ebrei, antisemitismo]
+# Una fonte reale su questi temi non genera un pezzo: il candidato viene scartato.
+on_forbidden_source: skip
+model: "anthropic/claude-sonnet-4.5"   # sovrascrivibile con env OPENROUTER_MODEL
+max_articles_per_run: 3
+min_body_chars: 400
+max_body_chars: 2500

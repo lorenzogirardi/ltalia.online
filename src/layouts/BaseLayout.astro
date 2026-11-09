@@ -1,0 +1,56 @@
+---
+import "../styles/global.css";
+import Disclaimer from "../components/Disclaimer.astro";
+interface Props { title?: string; description?: string }
+const { title = "Ltalia Online – Il portale (quasi) di tutti gli italiani", description = "Ltalia Online: sito parodia, satirico e innocuo. Non è Italia Online. Una L al posto della I, e nient'altro in comune." } = Astro.props;
+const nav = [
+  ["Home", "/"], ["Cronaca", "/categorie/cronaca/"], ["Politica", "/categorie/politica/"],
+  ["Sport", "/categorie/sport/"], ["Gossip", "/categorie/gossip/"], ["Cucina", "/categorie/cucina/"],
+  ["Meteo", "/#meteo"], ["Oroscopo", "/#oroscopo-box"], ["Archivio", "/archivio/"],
+];
+const ticker = [
+  "Il caffè al bar sale a 1,40€: \"Era il nostro ultimo affare sicuro\"",
+  "Treno in ritardo di 5 minuti, passeggeri festeggiano",
+  "Trovato parcheggio a Roma, indagini in corso",
+];
+---
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content={description}>
+<meta name="robots" content="noindex">
+<link rel="alternate" type="application/rss+xml" title="Ltalia Online" href="/rss.xml">
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <div class="logo"><a href="/"><span class="l">l</span>talia<span style="opacity:.75">.online</span></a><small>IL PORTALE (QUASI) DI TUTTI GLI ITALIANI</small></div>
+    <form class="search" action="/ricerca/" method="get">
+      <input type="search" name="q" placeholder="Cerca su Ltalia…" aria-label="Cerca">
+      <button>Cerca</button>
+    </form>
+  </div>
+  <nav><div class="wrap">{nav.map(([l, h]) => <a href={h}>{l}</a>)}</div></nav>
+</header>
+
+<div class="ticker"><div class="wrap"><b>ULTIM'ORA</b> {ticker.join(" · ")}</div></div>
+
+<main><slot /></main>
+
+<footer id="chi-siamo">
+  <div class="wrap">
+    <Disclaimer />
+    <div class="links">
+      <a href="/progetto/">Chi siamo (nessuno)</a>
+      <a href="/progetto/#privacy">Privacy (non raccogliamo nulla)</a>
+      <a href="/rettifiche/">Contatti (non risponderemo)</a>
+      <a href="/progetto/#lavora">Lavora con noi (non paghiamo)</a>
+    </div>
+    <div class="small">© Ltalia.online – Sito satirico a scopo di intrattenimento. Nessun fine di lucro, nessuna truffa, solo una L al posto di una I. Con affetto, e un po' di caffè.</div>
+  </div>
+</footer>
+</body>
+</html>

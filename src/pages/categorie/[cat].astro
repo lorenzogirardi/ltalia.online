@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Sidebar from "../../components/Sidebar.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import { CATEGORIES } from "../../content.config";
+import { allArticles, CATEGORY_LABELS } from "../../lib";
+export async function getStaticPaths() {
+  const all = await allArticles();
+  return CATEGORIES.map((cat) => ({ params: { cat }, props: { items: all.filter((a) => a.data.category === cat) } }));
+}
+const { cat } = Astro.params;
+const { items } = Astro.props;
+---
+<BaseLayout title={`${CATEGORY_LABELS[cat]} – Ltalia Online`}>
+  <div class="wrap grid">
+    <section>
+      <div class="sez" style="margin-top:0"><h2>{CATEGORY_LABELS[cat]}</h2></div>
+      {items.length ? <div class="news">{items.map((a) => <ArticleCard article={a} />)}</div> : <p>Nessuna notizia. Il che, per questa rubrica, è già una notizia.</p>}
+    </section>
+    <Sidebar />
+  </div>
+</BaseLayout>

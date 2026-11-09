@@ -1,0 +1,46 @@
+---
+import { allArticles } from "../lib";
+const più = (await allArticles()).slice(0, 5);
+---
+<aside>
+  <div class="box" id="meteo">
+    <h2>Meteo (credibile)</h2>
+    <div class="meteo"><span>Milano</span><b>☁️ Nebbia, ma "è la solita"</b></div>
+    <div class="meteo"><span>Roma</span><b>☀️ 31° e traffico</b></div>
+    <div class="meteo"><span>Napoli</span><b>🌤 Perfetto, ma non diteglielo</b></div>
+    <div class="meteo"><span>Torino</span><b>🌧 Pioggia, sabaudo stoicismo</b></div>
+    <div class="meteo"><span>Palermo</span><b>🔥 Si scioglie l'asfalto e l'arancina</b></div>
+  </div>
+
+  <div class="box" id="oroscopo-box">
+    <h2>Oroscopo istantaneo</h2>
+    <select id="segno" aria-label="Segno zodiacale">
+      {["Ariete","Toro","Gemelli","Cancro","Leone","Vergine","Bilancia","Scorpione","Sagittario","Capricorno","Acquario","Pesci"].map((s) => <option>{s}</option>)}
+    </select>
+    <button class="btn" id="vai" type="button">Svelami il futuro</button>
+    <div id="oroscopo" role="status"></div>
+  </div>
+
+  <div class="box">
+    <h2>I più letti</h2>
+    <ul>{più.map((a, i) => <li>{i + 1}. <a href={`/articoli/${a.id}/`}>{a.data.title}</a></li>)}</ul>
+  </div>
+</aside>
+<script is:inline>
+(function(){
+  var frasi=[
+    "Oggi incontrerai una persona che ti dirà 'ci vediamo presto'. Non succederà.",
+    "Giornata favorevole agli affari, sfavorevole agli affari tuoi.",
+    "Marte è in opposizione. Il tuo vicino anche, sul parcheggio.",
+    "Una telefonata inattesa cambierà la tua giornata. Sarà il call center.",
+    "Amore: tutto bene. Lavoro: tutto bene. Salute: non dire 'tutto bene' e tocca ferro.",
+    "Le stelle consigliano di non rispondere a quella mail. Né alla prossima.",
+    "Fortuna in arrivo: troverai un euro per terra. Era di un altro.",
+    "Mercurio è retrogrado, come il tuo router."
+  ];
+  var b=document.getElementById('vai'),o=document.getElementById('oroscopo'),s=document.getElementById('segno');
+  b.addEventListener('click',function(){
+    o.textContent=s.value+": "+frasi[Math.floor(Math.random()*frasi.length)];
+  });
+})();
+</script>

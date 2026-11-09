@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout title="Cerca – Ltalia Online">
+  <div class="wrap">
+    <div class="sez" style="margin-top:0"><h2>Cerca su Ltalia</h2></div>
+    <div id="risultati" class="lista" role="status"></div>
+  </div>
+  <script is:inline>
+    (async function () {
+      var q = new URLSearchParams(location.search).get("q") || "";
+      var out = document.getElementById("risultati");
+      if (!q) { out.textContent = "Scrivi qualcosa. Anche solo \"ciao\"."; return; }
+      try {
+        var pf = await import("/pagefind/pagefind.js");
+        var res = await pf.search(q);
+        if (!res.results.length) { out.textContent = "Ricerca non trovata. Come la banda larga in Molise."; return; }
+        var data = await Promise.all(res.results.slice(0, 20).map(function (r) { return r.data(); }));
+        out.innerHTML = "";
+        data.forEach(function (d) {
+          var a = document.createElement("a");
+          a.href = d.url; a.textContent = d.meta.title || d.url; out.appendChild(a);
+        });
+      } catch (e) { out.textContent = "Ricerca non trovata. Come la banda larga in Molise."; }
+    })();
+  </script>
+</BaseLayout>

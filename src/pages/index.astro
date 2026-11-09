@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+import Sidebar from "../components/Sidebar.astro";
+import { allArticles, CATEGORY_LABELS } from "../lib";
+const articles = await allArticles();
+const hero = articles.filter((a) => a.data.featured).sort((a, b) => (a.data.homepage_rank ?? 99) - (b.data.homepage_rank ?? 99))[0] ?? articles[0];
+const rest = articles.filter((a) => a.id !== hero?.id).slice(0, 12);
+---
+<BaseLayout>
+  <div class="wrap grid">
+    <section>
+      {hero && (
+        <article class="hero">
+          <a class="img" href={`/articoli/${hero.id}/`} aria-hidden="true" tabindex="-1">{hero.data.emoji}</a>
+          <span class="tag">In evidenza</span>
+          <h1><a href={`/articoli/${hero.id}/`}>{hero.data.title}</a></h1>
+          <p>{hero.data.description}</p>
+        </article>
+      )}
+      <div class="news">{rest.map((a) => <ArticleCard article={a} />)}</div>
+      <p><a href="/archivio/"><b>Tutto l'archivio →</b></a></p>
+
+      <div class="sez">
+        <h2>Lettere al direttore</h2>
+        <p><i>"Caro direttore, ho letto il suo sito per tre ore e non ho capito se mi stia prendendo in giro."</i><br>
+        <b>Risposta:</b> Sì. Ma con affetto.</p>
+      </div>
+    </section>
+    <Sidebar />
+  </div>
+</BaseLayout>

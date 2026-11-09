@@ -1,0 +1,8 @@
+# Feed da cui la pipeline trae SPUNTI (titolo + sommario). Verificare termini d'uso di ogni feed.
+# Il testo originale non viene mai ripubblicato: serve solo a ispirare il pezzo satirico.
+max_age_hours: 48
+feeds:
+  - {name: "ANSA Politica",   category: politica,   url: "https://www.ansa.it/sito/notizie/politica/politica_rss.xml"}
+  - {name: "ANSA Economia",   category: economia,   url: "https://www.ansa.it/sito/notizie/economia/economia_rss.xml"}
+  - {name: "ANSA Tecnologia", category: tecnologia, url: "https://www.ansa.it/sito/notizie/tecnologia/tecnologia_rss.xml"}
+  - {name: "ANSA Sport",      category: sport,      url: "https://www.ansa.it/sito/notizie/sport/sport_rss.xml"}

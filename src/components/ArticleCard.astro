@@ -1,0 +1,10 @@
+---
+import { CATEGORY_LABELS, type Article } from "../lib";
+interface Props { article: Article }
+const { article: a } = Astro.props;
+---
+<article class="card">
+  <span class="tag">{CATEGORY_LABELS[a.data.category]}</span>
+  <h3><a href={`/articoli/${a.id}/`}>{a.data.title}</a></h3>
+  <p>{a.data.description}</p>
+</article>

@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Sidebar from "../../components/Sidebar.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import { render } from "astro:content";
+import { allArticles, CATEGORY_LABELS, dateIt } from "../../lib";
+export async function getStaticPaths() {
+  const all = await allArticles();
+  return all.map((a) => ({
+    params: { slug: a.id },
+    props: { article: a, related: all.filter((r) => r.id !== a.id && r.data.category === a.data.category).slice(0, 2) },
+  }));
+}
+const { article: a, related } = Astro.props;
+const { Content } = await render(a);
+---
+<BaseLayout title={`${a.data.title} – Ltalia Online`} description={a.data.description}>
+  <div class="wrap grid">
+    <article data-pagefind-body>
+      <span class="badge-satira">Satira</span> <span class="tag">{CATEGORY_LABELS[a.data.category]}</span>
+      <div class="prose">
+        <h1>{a.data.title}</h1>
+        <p class="meta"><time datetime={a.data.published_at.toISOString()}>{dateIt(a.data.published_at)}</time></p>
+        <Content />
+      </div>
+      {a.data.real_news_summary && (
+        <div class="box-reale"><h2>La notizia reale</h2><p>{a.data.real_news_summary}</p>
+          {a.data.sources.length > 0 && <ul>{a.data.sources.map((s) => <li><a href={s.url} rel="noopener">{s.name}</a></li>)}</ul>}
+        </div>
+      )}
+      {a.data.ai_assisted && <p class="nota-ai">Pezzo satirico scritto con l'assistenza di un'intelligenza artificiale. Tutto quello che leggi qui sopra è inventato per ridere.</p>}
+      {related.length > 0 && <div class="sez"><h2>Leggi anche</h2><div class="news">{related.map((r) => <ArticleCard article={r} />)}</div></div>}
+    </article>
+    <Sidebar />
+  </div>
+</BaseLayout>

@@ -1,0 +1,68 @@
+name: Publish
+on:
+  schedule:
+    - cron: "0 6,12,18 * * *"   # UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# un solo deploy alla volta; non cancella quello in corso
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    # solo run schedulate/manuali: un push (grafica, correzioni) non chiama OpenRouter
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip, cache-dependency-path: pipeline/requirements.txt }
+      - run: pip install -r pipeline/requirements.txt
+      - run: python -m pytest -q tests
+      - run: python pipeline/run.py
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL }}
+      - name: Commit nuovi articoli
+        run: |
+          git config user.name "ltalia-bot"
+          git config user.email "ltalia-bot@users.noreply.github.com"
+          git add src/content/articles data/processed.json
+          git diff --cached --quiet || git commit -m "Nuovi articoli"
+          git push
+
+  build:
+    needs: generate
+    # parte anche quando generate è saltato (push), ma non se è fallito
+    if: ${{ !cancelled() && (needs.generate.result == 'success' || needs.generate.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx astro check
+      - run: npm run build
+      - name: Nessun segreto nel sito pubblicato
+        run: "! grep -rIl 'OPENROUTER' dist"
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
