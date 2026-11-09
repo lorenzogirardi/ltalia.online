@@ -19,10 +19,11 @@ def main() -> int:
     ed = load_yaml("editorial.yaml")
     limit = args.max or ed["max_articles_per_run"]
     published = 0
+    this_run: list[str] = []
     for cand in collect():
         if published >= limit:
             break
-        art = generate(cand)
+        art = generate(cand, this_run)
         rejected = None
         if art is None:
             rejected = "skip/errore del modello"
@@ -39,6 +40,7 @@ def main() -> int:
             print(f"[run] OK (dry-run):\n{json.dumps(art, ensure_ascii=False, indent=2)}")
         else:
             print(f"[run] pubblicato {publish(art, cand)}")
+        this_run.append(art["title"])
         published += 1
     print(f"[run] {published} articoli")
     return 0

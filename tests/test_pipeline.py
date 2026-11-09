@@ -48,3 +48,12 @@ def test_whole_word_only():
 def test_all_published_articles_respect_constraint():
     for p in ARTICLES_DIR.glob("*.md"):
         assert forbidden_hits(p.read_text(encoding="utf-8"), ED["blocklist"]) == [], p.name
+
+
+def test_user_message_has_techniques_and_avoid_list():
+    from generate import build_user_message, recent_titles
+    cand = {"category": "sport", "title": "T", "summary": "S"}
+    msg = build_user_message(cand, ["Titolo uno", "Titolo due"], [2, 5])
+    assert "2, 5" in msg and "- Titolo uno" in msg and "Non ripetere" in msg
+    assert "Non ripetere" not in build_user_message(cand, [], [1, 3])
+    assert recent_titles(3) and all(isinstance(t, str) for t in recent_titles(3))
