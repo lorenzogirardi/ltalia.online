@@ -2,9 +2,9 @@ name: Publish
 on:
   schedule:
     # GitHub ritarda (o salta) i cron: invece di un orario esatto si controlla ogni 30 minuti
-    # e il job "gate" decide se c'è uno slot (7:30, 12:30, 17:30, 22:30 ora di Roma) ancora da
-    # recuperare. Minuti dispari per evitare i picchi di inizio ora. UTC 5-21 copre ora legale e solare.
-    - cron: "17,47 5-21 * * *"
+    # e il job "gate" decide se c'è uno slot (6:30, 11:30, 16:30, 21:30 ora di Roma) ancora da
+    # recuperare. Minuti dispari per evitare i picchi di inizio ora. UTC 4-22 copre ora legale e solare.
+    - cron: "17,47 4-22 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -42,11 +42,11 @@ jobs:
           now=$(date +%s)
           slot=""
           # ultimo slot già iniziato oggi (ora di Roma)
-          for hm in 07:30 12:30 17:30 22:30; do
+          for hm in 06:30 11:30 16:30 21:30; do
             s=$(date -d "today $hm" +%s)
             [ "$s" -le "$now" ] && slot=$s
           done
-          if [ -z "$slot" ]; then echo "Prima delle 7:30: niente"; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ -z "$slot" ]; then echo "Prima delle 6:30: niente"; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           late=$(( (now - slot) / 60 ))
           last=$(git log -1 --format=%ct --grep='^Nuovi articoli' || true)
           last=${last:-0}
