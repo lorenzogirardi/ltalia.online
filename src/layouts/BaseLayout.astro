@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Disclaimer from "../components/Disclaimer.astro";
+import tickerData from "../data/ticker.json";
 interface Props { title?: string; description?: string }
 const { title = "Ltalia Online – Il portale (quasi) di tutti gli italiani", description = "Ltalia Online: sito parodia, satirico e innocuo. Non è Italia Online. Una L al posto della I, e nient'altro in comune." } = Astro.props;
 const nav = [
@@ -8,11 +9,7 @@ const nav = [
   ["Sport", "/categorie/sport/"], ["Gossip", "/categorie/gossip/"], ["Cucina", "/categorie/cucina/"],
   ["Meteo", "/#meteo"], ["Oroscopo", "/#oroscopo-box"], ["Archivio", "/archivio/"],
 ];
-const ticker = [
-  "Il caffè al bar sale a 1,40€: \"Era il nostro ultimo affare sicuro\"",
-  "Treno in ritardo di 5 minuti, passeggeri festeggiano",
-  "Trovato parcheggio a Roma, indagini in corso",
-];
+const ticker = tickerData.slice(0, 3).map((t) => t.text);
 ---
 <!doctype html>
 <html lang="it">

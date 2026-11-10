@@ -36,19 +36,14 @@ def build_user_message(candidate: dict, avoid: list[str], techniques: list[int])
     return msg
 
 
-def generate(candidate: dict, avoid: list[str] | None = None) -> dict | None:
-    """Restituisce i campi dell'articolo, oppure None se il modello dichiara skip.
-
-    `avoid` = titoli generati nella stessa run, da aggiungere agli ultimi pubblicati.
-    """
+def chat_json(system: str, user: str, temperature: float = 0.9) -> dict | None:
+    """Chiamata OpenRouter con risposta JSON; None dopo 3 tentativi falliti."""
     model = os.environ.get("OPENROUTER_MODEL") or load_yaml("editorial.yaml")["model"]
-    system = (ROOT / "pipeline" / "prompts" / "system.txt").read_text(encoding="utf-8")
-    user = build_user_message(candidate, (avoid or []) + recent_titles(), sorted(random.sample(range(1, N_TECHNIQUES + 1), 2)))
     payload = {
         "model": model,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         "response_format": {"type": "json_object"},
-        "temperature": 0.9,
+        "temperature": temperature,
     }
     req = urllib.request.Request(
         API, json.dumps(payload).encode(),
@@ -57,9 +52,19 @@ def generate(candidate: dict, avoid: list[str] | None = None) -> dict | None:
     for attempt in range(3):
         try:
             body = json.loads(urllib.request.urlopen(req, timeout=60).read())
-            data = json.loads(body["choices"][0]["message"]["content"])
-            return None if data.get("skip") else data
+            return json.loads(body["choices"][0]["message"]["content"])
         except Exception as e:
             print(f"[generate] tentativo {attempt + 1} fallito: {e}")
             time.sleep(2 ** attempt)
     return None
+
+
+def generate(candidate: dict, avoid: list[str] | None = None) -> dict | None:
+    """Restituisce i campi dell'articolo, oppure None se il modello dichiara skip.
+
+    `avoid` = titoli generati nella stessa run, da aggiungere agli ultimi pubblicati.
+    """
+    system = (ROOT / "pipeline" / "prompts" / "system.txt").read_text(encoding="utf-8")
+    user = build_user_message(candidate, (avoid or []) + recent_titles(), sorted(random.sample(range(1, N_TECHNIQUES + 1), 2)))
+    data = chat_json(system, user)
+    return None if data is None or data.get("skip") else data

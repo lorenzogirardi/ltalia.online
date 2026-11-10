@@ -9,6 +9,7 @@ from common import load_processed, load_yaml, save_processed
 from generate import generate
 from publish import publish
 from review import review
+from ticker import update_ticker
 
 
 def main() -> int:
@@ -43,6 +44,10 @@ def main() -> int:
         this_run.append(art["title"])
         published += 1
     print(f"[run] {published} articoli")
+    try:  # la striscia non deve mai bloccare gli articoli
+        update_ticker(dry_run=args.dry_run)
+    except Exception as e:
+        print(f"[ticker] errore: {e}")
     return 0
 
 

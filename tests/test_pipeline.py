@@ -57,3 +57,12 @@ def test_user_message_has_techniques_and_avoid_list():
     assert "2, 5" in msg and "- Titolo uno" in msg and "Non ripetere" in msg
     assert "Non ripetere" not in build_user_message(cand, [], [1, 3])
     assert recent_titles(3) and all(isinstance(t, str) for t in recent_titles(3))
+
+
+def test_ticker_line_review():
+    from ticker import review_line
+    bl = ED["blocklist"]
+    assert review_line("Treno in ritardo di 5 minuti, passeggeri festeggiano", bl, []) == []
+    assert "duplicata" in review_line("Treno in ritardo di 5 minuti, passeggeri festeggiano!", bl, ["Treno in ritardo di 5 minuti, passeggeri festeggiano"])
+    assert "lunghezza non valida" in review_line("x" * 200, bl, [])
+    assert any("tema vietato" in e for e in review_line("Scoppia la guerra dei parcheggi al supermercato", bl, []))
