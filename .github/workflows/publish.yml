@@ -122,8 +122,14 @@ jobs:
     steps:
       - name: Verifica la zona Cloudflare
         run: |
-          name=$(curl -fsS "https://api.cloudflare.com/client/v4/zones/$CF_ZONE" \
-            -H "Authorization: Bearer $CF_TOKEN" | python3 -c "import sys,json; print(json.load(sys.stdin)['result']['name'])")
+          code=$(curl -sS -o zone.json -w "%{http_code}" "https://api.cloudflare.com/client/v4/zones/$CF_ZONE" \
+            -H "Authorization: Bearer $CF_TOKEN")
+          if [ "$code" != "200" ]; then
+            echo "Cloudflare ha risposto HTTP $code: controlla CLOUDFLARE_ZONE_ID (Overview del dominio, non l'Account ID) e i permessi del token"
+            python3 -c "import json;print([e.get('message') for e in json.load(open('zone.json')).get('errors',[])])" || true
+            exit 1
+          fi
+          name=$(python3 -c "import json;print(json.load(open('zone.json'))['result']['name'])")
           echo "Zona: $name"
           [ "$name" = "ltalia.online" ] || { echo "Zone ID non corrisponde a ltalia.online"; exit 1; }
       - name: Attende la propagazione di Pages
