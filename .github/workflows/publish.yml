@@ -1,10 +1,9 @@
 name: Publish
 on:
   schedule:
-    # Il cron gira ogni 30 minuti, come gli altri workflow schedulati dei miei repo (che funzionano):
-    # un cron raro viene scartato da GitHub più facilmente. Il job "gate" lancia la generazione
-    # solo negli slot 06:00, 13:00, 20:00 UTC, una volta per slot (recupero fino a 2 ore di ritardo).
-    - cron: "17,47 * * * *"
+    # Generazione solo alle 06:00, 13:00, 20:00 UTC. Il job "gate" evita doppioni e recupera
+    # un eventuale ritardo di GitHub fino a 2 ore.
+    - cron: "0 6,13,20 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
