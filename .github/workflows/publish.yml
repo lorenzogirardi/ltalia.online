@@ -1,9 +1,9 @@
 name: Publish
 on:
   schedule:
-    # Generazione solo alle 07:00, 14:00, 21:00 UTC. Il job "gate" evita doppioni e recupera
-    # un eventuale ritardo di GitHub fino a 2 ore.
-    - cron: "0 7,14,21 * * *"
+    # GitHub lancia solo una parte dei cron: si prova ogni 30 minuti e il job "gate" genera una
+    # sola volta per slot (07:00, 14:00, 21:00 UTC), recuperando fino a 4 ore di ritardo.
+    - cron: "17,47 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -40,9 +40,9 @@ jobs:
           export TZ=UTC
           now=$(date +%s)
           slot=""
-          # ultimo slot già iniziato oggi (UTC)
-          for hm in 07:00 14:00 21:00; do
-            s=$(date -d "today $hm" +%s)
+          # ultimo slot già iniziato (UTC), compreso quello di ieri sera
+          for d in "yesterday 21:00" "today 07:00" "today 14:00" "today 21:00"; do
+            s=$(date -d "$d" +%s)
             [ "$s" -le "$now" ] && slot=$s
           done
           if [ -z "$slot" ]; then echo "Prima delle 07:00 UTC: niente"; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0; fi
@@ -50,8 +50,8 @@ jobs:
           last=$(git log -1 --format=%ct --grep='^Nuovi articoli' || true)
           last=${last:-0}
           echo "slot=$slot ritardo=${late}min ultima_generazione=$last"
-          if [ "$late" -gt 120 ]; then
-            echo "Slot più vecchio di 2 ore: non si recupera"; echo "run=false" >> "$GITHUB_OUTPUT"
+          if [ "$late" -gt 240 ]; then
+            echo "Slot più vecchio di 4 ore: non si recupera"; echo "run=false" >> "$GITHUB_OUTPUT"
           elif [ "$last" -ge "$slot" ]; then
             echo "Slot già coperto"; echo "run=false" >> "$GITHUB_OUTPUT"
           else
