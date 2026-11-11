@@ -1,10 +1,10 @@
 name: Publish
 on:
   schedule:
-    # GitHub ritarda (o salta) i cron: si controlla ogni 15 minuti e il job "gate" decide
-    # se c'è uno slot (6:30, 11:30, 16:30, 21:30 ora di Roma) ancora da recuperare.
-    # Minuti dispari per evitare i picchi di inizio ora. UTC 4-22 copre ora legale e solare.
-    - cron: "7,22,37,52 4-22 * * *"
+    # Slot di generazione: 06:00, 13:00, 20:00 UTC. GitHub ritarda o salta i cron, quindi si
+    # tenta quattro volte nell'ora dello slot e il job "gate" lancia la generazione una sola volta
+    # (recupero fino a 2 ore di ritardo). Minuti non tondi per evitare i picchi di inizio ora.
+    - cron: "3,17,32,47 6,13,20 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -38,21 +38,21 @@ jobs:
           if [ "${{ github.event_name }}" != "schedule" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"; exit 0
           fi
-          export TZ=Europe/Rome
+          export TZ=UTC
           now=$(date +%s)
           slot=""
-          # ultimo slot già iniziato oggi (ora di Roma)
-          for hm in 06:30 11:30 16:30 21:30; do
+          # ultimo slot già iniziato oggi (UTC)
+          for hm in 06:00 13:00 20:00; do
             s=$(date -d "today $hm" +%s)
             [ "$s" -le "$now" ] && slot=$s
           done
-          if [ -z "$slot" ]; then echo "Prima delle 6:30: niente"; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ -z "$slot" ]; then echo "Prima delle 06:00 UTC: niente"; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           late=$(( (now - slot) / 60 ))
           last=$(git log -1 --format=%ct --grep='^Nuovi articoli' || true)
           last=${last:-0}
           echo "slot=$slot ritardo=${late}min ultima_generazione=$last"
-          if [ "$late" -gt 180 ]; then
-            echo "Slot più vecchio di 3 ore: non si recupera"; echo "run=false" >> "$GITHUB_OUTPUT"
+          if [ "$late" -gt 120 ]; then
+            echo "Slot più vecchio di 2 ore: non si recupera"; echo "run=false" >> "$GITHUB_OUTPUT"
           elif [ "$last" -ge "$slot" ]; then
             echo "Slot già coperto"; echo "run=false" >> "$GITHUB_OUTPUT"
           else
