@@ -1,9 +1,9 @@
 name: Publish
 on:
   schedule:
-    # Generazione solo alle 06:00, 13:00, 20:00 UTC. Il job "gate" evita doppioni e recupera
+    # Generazione solo alle 07:00, 14:00, 21:00 UTC. Il job "gate" evita doppioni e recupera
     # un eventuale ritardo di GitHub fino a 2 ore.
-    - cron: "0 6,13,20 * * *"
+    - cron: "0 7,14,21 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -41,11 +41,11 @@ jobs:
           now=$(date +%s)
           slot=""
           # ultimo slot già iniziato oggi (UTC)
-          for hm in 06:00 13:00 20:00; do
+          for hm in 07:00 14:00 21:00; do
             s=$(date -d "today $hm" +%s)
             [ "$s" -le "$now" ] && slot=$s
           done
-          if [ -z "$slot" ]; then echo "Prima delle 06:00 UTC: niente"; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ -z "$slot" ]; then echo "Prima delle 07:00 UTC: niente"; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           late=$(( (now - slot) / 60 ))
           last=$(git log -1 --format=%ct --grep='^Nuovi articoli' || true)
           last=${last:-0}
